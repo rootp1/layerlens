@@ -1,0 +1,52 @@
+name: Dockerfile check
+
+on:
+  pull_request:
+    paths:
+      - "**/Dockerfile"
+      - "**/Dockerfile.*"
+      - "**/*.Dockerfile"
+  push:
+    branches: [main]
+    paths:
+      - "**/Dockerfile"
+      - "**/Dockerfile.*"
+      - "**/*.Dockerfile"
+
+jobs:
+  scan:
+    name: Scan Dockerfiles (repo tool)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Install layerlens-lint
+        run: pip install ./apps/lint
+      - name: Scan every Dockerfile in the repo
+        run: layerlens scan . --fail-under 40
+
+  pr-comment:
+    name: Comment when a Dockerfile got worse
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # need base branch history so `git show` can read the old Dockerfile
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Install layerlens-lint
+        run: pip install ./apps/lint
+      - name: Check apps/api/Dockerfile against the PR base
+        run: |
+          layerlens pr-check \
+            --dockerfile apps/api/Dockerfile \
+            --post \
+            --fail-on-worse
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

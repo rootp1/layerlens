@@ -14,7 +14,8 @@ full feature scope; this repo is the same functionality under a new name and lay
 layerlens/
 ├── apps/
 │   ├── api/   Flask backend — runs Dive against an image, calls an LLM for advice
-│   └── web/   React frontend — form, charts, animated results dashboard
+│   ├── web/   React frontend — form, charts, animated results dashboard
+│   └── lint/  layerlens-lint — installable Python package, static Dockerfile analysis
 ```
 
 ## Running locally
@@ -39,6 +40,27 @@ cd apps/web
 npm install
 cp .env.example .env   # points at the local backend by default
 npm start               # serves on http://localhost:3000
+```
+
+### Dockerfile linting/CI package (`apps/lint`)
+
+`layerlens-lint` is a separate, standalone Python package (its own `pyproject.toml`) with no
+dependency on the API/web apps or on Docker/Dive being installed — it works purely from
+Dockerfile *text*. Two features:
+
+1. **Repo scanner** — `layerlens scan .` finds every Dockerfile in a tree and prints a score
+   plus concrete fixes, before anything gets built.
+2. **CI/CD PR assistant** — `layerlens pr-check --dockerfile <path> --post --fail-on-worse`
+   compares a Dockerfile's PR base vs. head and posts a GitHub PR comment (and fails CI) when it
+   got worse. See `.github/workflows/dockerfile-check.yml` for a working example, and
+   `apps/lint/README.md` for full usage and the library API.
+
+```bash
+cd apps/lint
+python3 -m venv .venv && source .venv/bin/activate
+pip install -e ".[dev]"
+pytest                      # 29 tests
+layerlens scan ../..         # scan this whole repo
 ```
 
 ## Deployment

@@ -1,0 +1,25 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "layerlens-lint"
+version = "0.1.0"
+description = "Static Dockerfile analysis: a pre-build repo scanner and a CI bot that comments on PRs when a Dockerfile gets worse."
+readme = "README.md"
+requires-python = ">=3.8"
+license = { text = "MIT" }
+dependencies = [
+    "requests>=2.25",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7",
+]
+
+[project.scripts]
+layerlens = "layerlens_lint.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
