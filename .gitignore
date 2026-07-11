@@ -1,0 +1,16 @@
+# Node / frontend
+apps/web/node_modules/
+apps/web/build/
+apps/web/coverage/
+apps/web/.env
+apps/web/.env.local
+
+# Python / backend
+apps/api/flaskenv/
+apps/api/__pycache__/
+apps/api/**/__pycache__/
+apps/api/*.py[cod]
+apps/api/.env
+
+# OS
+.DS_Store
