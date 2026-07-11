@@ -12,6 +12,7 @@ import Documentation from './pages/Documentation';
 import Console from './pages/Console';
 import TopNav from './components/TopNav';
 import AuroraField from './components/AuroraField';
+import Footer from './components/Footer';
 
 const pageVariants = {
   initial: { opacity: 0, y: 24 },
@@ -58,6 +59,7 @@ function AppShell() {
             <Route path="/console" element={<PageTransition><Console /></PageTransition>} />
           </Routes>
         </AnimatePresence>
+        <Footer />
       </Box>
     </>
   );

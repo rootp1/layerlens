@@ -11,6 +11,10 @@ export const analyzePost = async (imageName, dockerFile) => {
     return response.data;
   } catch (error) {
     console.error('There was an error sending the data to the API', error);
-    return { error: "Couldn't reach the analysis API. Please try again later." };
+    // Axios throws on non-2xx responses — the backend still sends a specific
+    // { error: "..." } body for rejected/failed scans (bad image name, dive
+    // failure, etc.), so surface that instead of a generic message.
+    const backendMessage = error?.response?.data?.error;
+    return { error: backendMessage || "Couldn't reach the analysis API. Please try again later." };
   }
 };

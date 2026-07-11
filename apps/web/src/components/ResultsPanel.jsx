@@ -77,9 +77,20 @@ export default function RecipeReviewCard({ expandedText, stats, onReset }) {
                 className="overflow-hidden"
               >
                 <div className="mt-6 rounded-xl border border-neon-violet/25 bg-black/30 p-5 sm:p-6">
-                  <div className="flex items-center gap-2 mb-4 text-xs font-mono-code text-slate-400 uppercase tracking-widest">
-                    <span className="w-2 h-2 rounded-full bg-neon-green animate-pulse-glow" />
-                    AI analysis output
+                  <div className="flex items-center justify-between flex-wrap gap-2 mb-4">
+                    <div className="flex items-center gap-2 text-xs font-mono-code text-slate-400 uppercase tracking-widest">
+                      <span className="w-2 h-2 rounded-full bg-neon-green animate-pulse-glow" />
+                      AI analysis output
+                    </div>
+                    <a
+                      href="https://featherless.ai"
+                      target="_blank"
+                      rel="noreferrer"
+                      className="inline-flex items-center gap-1.5 no-underline text-[11px] font-mono-code text-slate-400 hover:text-neon-cyan transition-colors border border-neon-cyan/30 rounded-full px-2.5 py-1"
+                    >
+                      <span className="text-neon-cyan">⚡</span>
+                      Powered by <span className="gradient-text font-semibold">Featherless.ai</span>
+                    </a>
                   </div>
                   <MarkdownLite text={expandedText} />
                 </div>

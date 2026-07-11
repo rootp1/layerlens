@@ -30,26 +30,27 @@ def analyze_image():
         return jsonify({"error": "No image_name provided"}), 400
 
     analysis_results = analyze_docker_image(image_name)
-    # turn analysis_results into a string
-    # send it to GPT-3
-    # return the response from GPT-3
-    if analysis_results:
-        string_results = str(analysis_results)
-        if len(string_results) > 5000:
-            # Assuming that a token is roughly equivalent to a character.
-            # This might need adjustment depending on how you define a token.
-            string_results = string_results[-5000:]
-        print(string_results)
-        response = generate_response(string_results, prompt, dockerfile)
-        if response:
-            return jsonify({
-                "analysis": response,
-                "stats": analysis_results['stats']
-            })
-        else:
-            return jsonify({"error": "LLM Failed to analyze image"}), 500
+
+    # analyze_docker_image always returns a dict: either {'error': '...'} for a
+    # rejected/failed scan, or the full {'image_name', 'stats', 'output'} shape.
+    if 'error' in analysis_results:
+        return jsonify({"error": analysis_results['error']}), 422
+
+    string_results = str(analysis_results)
+    if len(string_results) > 5000:
+        # Assuming that a token is roughly equivalent to a character.
+        # This might need adjustment depending on how you define a token.
+        string_results = string_results[-5000:]
+    print(string_results)
+    response = generate_response(string_results, prompt, dockerfile)
+    if response:
+        return jsonify({
+            "analysis": response,
+            "stats": analysis_results['stats'],
+            "poweredBy": "Featherless.ai"
+        })
     else:
-        return jsonify({"error": "Failed to generate analysis"}), 500
+        return jsonify({"error": "The AI model failed to generate an analysis. Please try again."}), 502
 
 
 @app.route('/', methods=['GET'])
