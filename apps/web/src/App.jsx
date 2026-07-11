@@ -47,8 +47,9 @@ function AppShell() {
           position: 'relative',
           zIndex: 1,
           minHeight: 'calc(100vh - 96px)',
-          width: '100vw',
-          maxWidth: '100vw',
+          width: '100%',
+          maxWidth: '100%',
+          overflowX: 'hidden',
         }}
       >
         <AnimatePresence mode="wait">

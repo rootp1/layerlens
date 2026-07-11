@@ -63,6 +63,28 @@ function GlowOrb() {
       <div className="relative z-10 h-40 w-40 sm:h-52 sm:w-52 rounded-3xl glass-panel shadow-neon flex items-center justify-center animate-float">
         <span className="font-display text-6xl sm:text-7xl gradient-text select-none">🐳</span>
       </div>
+
+      <motion.a
+        href="https://featherless.ai"
+        target="_blank"
+        rel="noreferrer"
+        initial={{ opacity: 0, y: 8 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.6, duration: 0.5 }}
+        whileHover={{ scale: 1.05 }}
+        className="absolute top-2 sm:top-4 left-1/2 -translate-x-1/2 z-20 inline-flex items-center gap-1.5 no-underline glass-panel rounded-full px-3 py-1.5 shadow-neon-sm whitespace-nowrap"
+      >
+        <motion.span
+          animate={{ opacity: [1, 0.5, 1] }}
+          transition={{ duration: 2, repeat: Infinity }}
+          className="text-neon-cyan"
+        >
+          ⚡
+        </motion.span>
+        <span className="text-[11px] sm:text-xs font-mono-code text-slate-200">
+          Powered by <span className="gradient-text font-semibold">Featherless.ai</span>
+        </span>
+      </motion.a>
     </div>
   );
 }
