@@ -43,12 +43,25 @@ npm start               # serves on http://localhost:3000
 
 ## Deployment
 
-- **Frontend** → Vercel (`apps/web`, set `REACT_APP_API_BASE_URL` to the deployed backend URL)
-- **Backend** → Hugging Face Spaces (Docker SDK, `apps/api`)
+- **Frontend** → [Vercel](https://layerlens-web.vercel.app), built from `apps/web` with
+  `REACT_APP_API_BASE_URL` set at build time to the backend's public URL.
+- **Backend** → runs locally (`apps/api`, with a real Docker daemon + `dive` available) and is
+  exposed to the internet via a [Cloudflare Tunnel](https://developers.cloudflare.com/cloudflare-one/connections/connect-apps/)
+  (`cloudflared tunnel --url http://localhost:5001`).
 
-> **Known limitation:** the backend's `/analyze` endpoint shells out to `docker` and `dive`
-> against a real Docker daemon (the original Dockerfile runs `dockerd` inside a
-> `docker:dind` container in privileged mode). Hugging Face Spaces does not support
-> privileged containers or docker-in-docker, so the health check (`GET /`) will work there
-> but `/analyze` will fail until the backend is hosted somewhere that allows a real Docker
-> daemon (e.g. a VPS, Fly.io, Render with Docker-in-Docker, or similar).
+Why not a managed host for the backend: it shells out to `docker`/`dive` against a real Docker
+daemon (the original Dockerfile even runs `dockerd` inside a `docker:dind` container in
+privileged mode). Hugging Face Spaces doesn't support privileged/Docker-in-Docker containers,
+and its Docker-SDK Spaces additionally require a PRO subscription — so instead the backend runs
+on a machine that already has Docker, and Cloudflare Tunnel punches a public HTTPS URL through
+to it without needing router/port-forwarding setup. The tunnel URL from a quick tunnel
+(`cloudflared tunnel --url ...`) is ephemeral — it changes every time the tunnel restarts, so
+after a restart, re-run the Vercel build with the new URL:
+
+```bash
+cd apps/web
+vercel --prod --yes -b REACT_APP_API_BASE_URL=https://<new-tunnel-subdomain>.trycloudflare.com
+```
+
+For a stable, permanent URL instead, authenticate `cloudflared` to a Cloudflare account
+(`cloudflared tunnel login`) and create a named tunnel bound to a real domain.
