@@ -9,6 +9,7 @@ import Slide from '@mui/material/Slide';
 const LINKS = [
   { label: 'Home', to: '/home' },
   { label: 'Console', to: '/console' },
+  { label: 'Lint', to: '/lint' },
   { label: 'Docs', to: '/docs' },
 ];
 

@@ -32,6 +32,13 @@ const FEATURES = [
     glyph: '⌁',
     color: 'from-pink-500 to-violet-600',
   },
+  {
+    title: 'Instant Static Lint',
+    desc: 'No image, no Docker daemon — paste a Dockerfile and get a score plus fixes in milliseconds.',
+    glyph: '⌘',
+    color: 'from-emerald-500 to-cyan-600',
+    to: '/lint',
+  },
 ];
 
 const STATS = [
@@ -156,26 +163,37 @@ function Home() {
           What actually happens under the hood
         </motion.h2>
 
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
-          {FEATURES.map((f, i) => (
-            <motion.div
-              key={f.title}
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, amount: 0.3 }}
-              transition={{ duration: 0.5, delay: i * 0.12 }}
-              whileHover={{ y: -6 }}
-              className="glass-panel rounded-2xl p-6 shadow-neon-sm hover:shadow-neon transition-shadow"
-            >
-              <div
-                className={`h-12 w-12 rounded-xl bg-gradient-to-br ${f.color} flex items-center justify-center text-2xl text-white mb-4 shadow-neon-sm`}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          {FEATURES.map((f, i) => {
+            const card = (
+              <motion.div
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, amount: 0.3 }}
+                transition={{ duration: 0.5, delay: i * 0.12 }}
+                whileHover={{ y: -6 }}
+                className="glass-panel rounded-2xl p-6 shadow-neon-sm hover:shadow-neon transition-shadow h-full"
               >
-                {f.glyph}
-              </div>
-              <h3 className="font-display font-semibold text-lg text-white mb-2">{f.title}</h3>
-              <p className="text-slate-400 text-sm leading-relaxed">{f.desc}</p>
-            </motion.div>
-          ))}
+                <div
+                  className={`h-12 w-12 rounded-xl bg-gradient-to-br ${f.color} flex items-center justify-center text-2xl text-white mb-4 shadow-neon-sm`}
+                >
+                  {f.glyph}
+                </div>
+                <h3 className="font-display font-semibold text-lg text-white mb-2">{f.title}</h3>
+                <p className="text-slate-400 text-sm leading-relaxed">{f.desc}</p>
+                {f.to && (
+                  <span className="inline-block mt-3 text-xs font-mono-code text-neon-cyan">Try it →</span>
+                )}
+              </motion.div>
+            );
+            return f.to ? (
+              <Link key={f.title} to={f.to} className="no-underline">
+                {card}
+              </Link>
+            ) : (
+              <React.Fragment key={f.title}>{card}</React.Fragment>
+            );
+          })}
         </div>
       </section>
 

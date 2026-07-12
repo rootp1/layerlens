@@ -10,6 +10,7 @@ import theme from './theme';
 import Landing from './pages/Landing';
 import Documentation from './pages/Documentation';
 import Console from './pages/Console';
+import Lint from './pages/Lint';
 import TopNav from './components/TopNav';
 import AuroraField from './components/AuroraField';
 import Footer from './components/Footer';
@@ -58,6 +59,7 @@ function AppShell() {
             <Route path="/home" element={<PageTransition><Landing /></PageTransition>} />
             <Route path="/docs" element={<PageTransition><Documentation /></PageTransition>} />
             <Route path="/console" element={<PageTransition><Console /></PageTransition>} />
+            <Route path="/lint" element={<PageTransition><Lint /></PageTransition>} />
           </Routes>
         </AnimatePresence>
         <Footer />

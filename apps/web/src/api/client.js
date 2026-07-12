@@ -18,3 +18,16 @@ export const analyzePost = async (imageName, dockerFile) => {
     return { error: backendMessage || "Couldn't reach the analysis API. Please try again later." };
   }
 };
+
+export const lintPost = async (dockerFile) => {
+  try {
+    const response = await axios.post(`${API_BASE_URL}/lint`, {
+      dockerfile: dockerFile,
+    });
+    return response.data;
+  } catch (error) {
+    console.error('There was an error linting the Dockerfile', error);
+    const backendMessage = error?.response?.data?.error;
+    return { error: backendMessage || "Couldn't reach the lint API. Please try again later." };
+  }
+};

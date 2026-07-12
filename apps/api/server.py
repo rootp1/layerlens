@@ -4,6 +4,7 @@ import os
 import openai
 from flask import Flask, request, jsonify
 from flask_cors import CORS
+from layerlens_lint import analyze as lint_analyze
 
 from services.dive_service import analyze_docker_image
 from services.ai_service import generate_response
@@ -51,6 +52,21 @@ def analyze_image():
         })
     else:
         return jsonify({"error": "The AI model failed to generate an analysis. Please try again."}), 502
+
+
+@app.route('/lint', methods=['POST'])
+def lint_dockerfile():
+    data = request.json
+    try:
+        dockerfile = data.get('dockerfile')
+    except:
+        return jsonify({"error": "Invalid JSON"}), 400
+
+    if not dockerfile or not dockerfile.strip():
+        return jsonify({"error": "No dockerfile provided"}), 400
+
+    result = lint_analyze(dockerfile)
+    return jsonify(result.to_dict())
 
 
 @app.route('/', methods=['GET'])
