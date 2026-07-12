@@ -3,8 +3,10 @@
 Live app: https://layerlens-web.vercel.app
 Repo: https://github.com/rootp1/layerlens
 
-Two things to have open before you start:
+Three things to have open before you start:
 - A browser tab on **https://layerlens-web.vercel.app**
+- A browser tab on **https://github.com/rootp1/layerlens/pull/1** (a real, live demo PR with
+  a genuine bot-posted comment — see the CI section below)
 - A terminal, `cd`'d into the `layerlens` repo, with `apps/lint/.venv` activated
   (`source apps/lint/.venv/bin/activate`) so the `layerlens` CLI is on PATH
 
@@ -142,16 +144,28 @@ cat .github/workflows/dockerfile-check.yml
 > "And this is the CI/CD assistant piece — on every pull request, it diffs the Dockerfile
 > against the PR's base branch. If a change makes it worse — say someone adds `COPY .env`
 > or drops the non-root user — it posts a comment on the PR explaining exactly what
-> regressed, and fails the build. It's a real GitHub PR comment via the API, not a
-> notification — it shows up right in the review, where the fix actually needs to happen."
+> regressed, and fails the build."
 
-**[Optional — if you have a real PR to show, open it. Otherwise, narrate:]**
+**[Switch to browser: https://github.com/rootp1/layerlens/pull/1]**
 
 **SAY:**
-> "I tested this against this repo's actual backend Dockerfile — added a hardcoded secret
-> copy to simulate a bad PR, and it caught the score drop from 87 to 67 and flagged the
-> exact line, then I reverted it. That's the loop: catch it before merge, not after
-> deploy."
+> "This isn't a mockup — this is a real, live PR on this repo. I deliberately added a
+> `COPY .env` line to the backend Dockerfile on a branch, opened this PR, and the workflow
+> you just saw ran automatically."
+
+**[Scroll to the checks section — point at the two check runs]**
+
+**SAY:**
+> "Two jobs ran: 'Scan Dockerfiles' passed — the repo-wide scan didn't hit the failure
+> threshold — but 'Comment when a Dockerfile got worse' failed on purpose, because it
+> detected a regression on this specific file."
+
+**[Scroll to the posted comment from `github-actions[bot]`]**
+
+**SAY:**
+> "And here's the actual comment it posted — score 87 down to 67, a critical finding
+> flagging the exact `.env` copy, and the suggested fix. That's a real GitHub API call from
+> CI, landing right in the PR review, not a Slack notification or a build log nobody reads."
 
 ---
 
