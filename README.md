@@ -45,15 +45,24 @@ npm start               # serves on http://localhost:3000
 ### Dockerfile linting/CI package (`apps/lint`)
 
 `layerlens-lint` is a separate, standalone Python package (its own `pyproject.toml`) with no
-dependency on the API/web apps or on Docker/Dive being installed — it works purely from
-Dockerfile *text*. Two features:
+required dependency on the API/web apps or on Docker/Dive — it works purely from Dockerfile
+*text*, which is what lets it run before an image is ever built or in CI on a bare PR diff.
+The product framing: lint + optimize Dockerfiles across a repo, explain fixes clearly, and
+enforce best practices before builds ship — not another paste-your-Dockerfile web form (that
+part is still what `apps/web`'s `/lint` page does, as one surface among several).
 
-1. **Repo scanner** — `layerlens scan .` finds every Dockerfile in a tree and prints a score
-   plus concrete fixes, before anything gets built.
+1. **Repo scanner** — `layerlens scan .` finds every Dockerfile in a tree, scores it, and
+   prioritizes findings (top-impact issues, quick wins vs. advanced improvements).
 2. **CI/CD PR assistant** — `layerlens pr-check --dockerfile <path> --post --fail-on-worse`
    compares a Dockerfile's PR base vs. head and posts a GitHub PR comment (and fails CI) when it
-   got worse. See `.github/workflows/dockerfile-check.yml` for a working example, and
-   `apps/lint/README.md` for full usage and the library API.
+   got worse. See `.github/workflows/dockerfile-check.yml` for a working example.
+3. **AI rewrite suggestions** — `--explain` turns findings into "what's wrong / why it
+   matters / exact fix / patched Dockerfile", via any OpenAI-compatible LLM. Opt-in only.
+4. **Deep analysis** — `--deep` builds the image and runs `dive` against it for real
+   layer-efficiency numbers, when Docker/dive happen to be available.
+
+Same engine, four surfaces: CLI, CI logs, GitHub PR comments, and JSON. Full usage and the
+library API are in `apps/lint/README.md`.
 
 ```bash
 cd apps/lint

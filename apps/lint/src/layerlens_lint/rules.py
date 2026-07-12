@@ -28,6 +28,24 @@ SECRET_PATTERNS = (
 
 MAX_REASONABLE_LAYERS = 15
 
+# Rough effort classification per rule, used by categorize.py to split findings
+# into "quick wins" (small, mechanical, low-risk edits) vs. "advanced
+# improvements" (structural changes that need more thought/testing).
+EFFORT_BY_RULE = {
+    "large_base_image": "advanced",
+    "unpinned_base_image": "quick",
+    "missing_multistage_build": "advanced",
+    "copies_entire_context": "quick",
+    "apt_cache_not_cleaned": "quick",
+    "npm_cache_not_cleaned": "quick",
+    "runs_as_root": "advanced",
+    "sensitive_file_copied": "advanced",
+    "excessive_layers": "advanced",
+    "add_instead_of_copy": "quick",
+    "missing_healthcheck": "quick",
+    "missing_dockerignore": "quick",
+}
+
 
 @dataclass
 class Finding:

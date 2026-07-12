@@ -47,6 +47,11 @@ jobs:
           layerlens pr-check \
             --dockerfile apps/api/Dockerfile \
             --post \
-            --fail-on-worse
+            --fail-on-worse \
+            --explain
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          # Optional: set this repo secret to have the PR comment include an
+          # AI-written explanation + patched Dockerfile for any regression.
+          # Without it, --explain is a no-op and the comment stays static-only.
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}

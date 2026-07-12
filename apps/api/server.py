@@ -5,6 +5,7 @@ import openai
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 from layerlens_lint import analyze as lint_analyze
+from layerlens_lint import prioritize as lint_prioritize
 
 from services.dive_service import analyze_docker_image
 from services.ai_service import generate_response
@@ -66,7 +67,9 @@ def lint_dockerfile():
         return jsonify({"error": "No dockerfile provided"}), 400
 
     result = lint_analyze(dockerfile)
-    return jsonify(result.to_dict())
+    payload = result.to_dict()
+    payload["prioritization"] = lint_prioritize(result).to_dict()
+    return jsonify(payload)
 
 
 @app.route('/', methods=['GET'])

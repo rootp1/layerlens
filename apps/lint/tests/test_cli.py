@@ -155,3 +155,62 @@ def test_pr_check_posts_comment_when_worse(tmp_path, good_dockerfile, bad_docker
     assert captured["pr_number"] == 9
     assert captured["token"] == "tok_abc"
     assert "Posted comment to owner/repo#9." in out
+
+
+def test_scan_command_top_n_and_categorization_in_json(tmp_path, bad_dockerfile, capsys):
+    _write(str(tmp_path / "Dockerfile"), bad_dockerfile)
+
+    exit_code = main(["scan", str(tmp_path), "--json", "--top-n", "2"])
+    out = capsys.readouterr().out
+    payload = json.loads(out)
+
+    assert exit_code == 0
+    prio = payload["files"][0]["prioritization"]
+    assert len(prio["top_issues"]) == 2
+    assert "quick_wins" in prio
+    assert "advanced_improvements" in prio
+
+
+def test_scan_command_explain_without_key_reports_error(tmp_path, bad_dockerfile, monkeypatch, capsys):
+    monkeypatch.delenv("OPENAI_API_KEY", raising=False)
+    _write(str(tmp_path / "Dockerfile"), bad_dockerfile)
+
+    exit_code = main(["scan", str(tmp_path), "--json", "--explain"])
+    payload = json.loads(capsys.readouterr().out)
+
+    assert exit_code == 0
+    assert "ai_explanation_error" in payload["files"][0]
+    assert "ai_explanation" not in payload["files"][0]
+
+
+def test_scan_command_explain_calls_llm_when_configured(tmp_path, bad_dockerfile, monkeypatch, capsys):
+    _write(str(tmp_path / "Dockerfile"), bad_dockerfile)
+
+    monkeypatch.setattr(
+        "layerlens_lint.cli.generate_fix_explanation",
+        lambda dockerfile_text, findings, config: "Switch to node:20-alpine and add a USER instruction.",
+    )
+
+    exit_code = main([
+        "scan", str(tmp_path), "--json", "--explain", "--explain-key", "sk-test",
+    ])
+    payload = json.loads(capsys.readouterr().out)
+
+    assert exit_code == 0
+    assert payload["files"][0]["ai_explanation"] == "Switch to node:20-alpine and add a USER instruction."
+
+
+def test_scan_command_deep_reports_tool_unavailable(tmp_path, bad_dockerfile, monkeypatch, capsys):
+    _write(str(tmp_path / "Dockerfile"), bad_dockerfile)
+
+    monkeypatch.setattr(
+        "layerlens_lint.cli.run_deep_analysis",
+        lambda dockerfile_path, context_dir=None: {"error": "'docker' and/or 'dive' aren't available on PATH — skipping deep analysis."},
+    )
+
+    exit_code = main(["scan", str(tmp_path), "--json", "--deep"])
+    payload = json.loads(capsys.readouterr().out)
+
+    assert exit_code == 0
+    assert "error" in payload["files"][0]["deep"]
+
