@@ -21,6 +21,7 @@ RUN pip3 install --no-cache-dir -r requirements.txt
 
 # Copy your application code into the container
 COPY . /app
+COPY .env /app/.env
 WORKDIR /app
 
 # Copy the start script
